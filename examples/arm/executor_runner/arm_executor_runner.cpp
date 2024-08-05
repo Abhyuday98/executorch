@@ -94,7 +94,7 @@ Result<util::BufferCleanup> prepare_input_tensors(
   size_t num_allocated = 0;
 
   ET_CHECK_OR_RETURN_ERROR(
-      input_buffers.size() > 0 && num_inputs == input_buffers.size(),
+      (input_buffers.size() > 0 && num_inputs == input_buffers.size()) || input_buffers.size() == 0,
       InvalidArgument,
       "Wrong number of inputs allocated compared to method");
 

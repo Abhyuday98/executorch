@@ -96,7 +96,7 @@ cmake_build_llava_runner_for_android() {
         -DANDROID_PLATFORM=android-23                                           \
         ${LLAVA_COMMON_CMAKE_ARGS}                                              \
         -DCMAKE_PREFIX_PATH="$python_lib"                                       \
-        -DLLAVA_RUNNER_NO_TORCH_DUMMY_IMAGE=ON                                  \
+        -DBUILD_LLAVA_RUNNER_WITHOUT_TORCH=ON                                   \
         -B${BUILD_DIR}/${dir}                                                   \
         ${dir}
 
@@ -113,7 +113,7 @@ export_llava() {
 prepare_image_tensor() {
     echo "Downloading image"
     curl -o basketball.jpg https://upload.wikimedia.org/wikipedia/commons/7/73/Chicago_Bulls_and_New_Jersey_Nets%2C_March_28%2C_1991.jpg
-    $PYTHON_EXECUTABLE -m executorch.examples.models.llava.image_util --image-path basketball.jpg --output-path image.pt
+    $PYTHON_EXECUTABLE -m executorch.examples.models.llava.image_util --image-path basketball.jpg --output-path image.pt --output-csv image.csv
 }
 
 run_and_verify() {
@@ -131,8 +131,6 @@ run_and_verify() {
         echo "tokenizer.bin is missing."
         exit 1
     fi
-
-
 
     RUNTIME_ARGS="--model_path=llava.pte    \
         --tokenizer_path=tokenizer.bin      \

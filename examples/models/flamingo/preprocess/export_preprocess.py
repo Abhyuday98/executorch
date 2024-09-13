@@ -4,7 +4,10 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-from export_preprocess_lib import export_preprocess, lower_to_executorch_preprocess
+from executorch.examples.models.flamingo.preprocess.export_preprocess_lib import (
+    export_preprocess,
+    lower_to_executorch_preprocess,
+)
 
 
 def main():

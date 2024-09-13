@@ -118,6 +118,7 @@ jobs:
     name: export-models
     uses: pytorch/test-infra/.github/workflows/macos_job.yml@main
     needs: set-parameters
+    secrets: inherit
     strategy:
       matrix:
           model: ${{ fromJson(needs.set-parameters.outputs.models) }}
@@ -131,6 +132,7 @@ jobs:
       timeout: 60
       upload-artifact: ios-models
       upload-artifact-to-s3: true
+      secrets-env: EXECUTORCH_HF_TOKEN
       script: |
         set -eux
 
@@ -159,7 +161,16 @@ jobs:
         BUILD_MODE="cmake"
         DTYPE="fp32"
 
-        if [[ ${{ matrix.model }} =~ ^stories* ]]; then
+        if [[ ${{ matrix.model }} =~ ^[^/]+/[^/]+$ ]] && [[ ${{ matrix.delegate }} == "xnnpack" ]]; then
+            pip install -U "huggingface_hub[cli]"
+            huggingface-cli login --token $SECRET_EXECUTORCH_HF_TOKEN
+            pip install accelerate sentencepiece
+            # TODO(guangyang): Switch to use released transformers library after all required patches are included
+            pip install "git+https://github.com/huggingface/transformers.git@6cc4dfe3f1e8d421c6d6351388e06e9b123cbfe1"
+            # HuggingFace model. Assume the pattern is always like "<org>/<repo>"
+            HF_MODEL_REPO=${{ matrix.model }}
+            PYTHON_EXECUTABLE=python bash .ci/scripts/test_hf_model.sh ${{ matrix.model }} ${ARTIFACTS_DIR_NAME}
+        elif [[ ${{ matrix.model }} =~ ^stories* ]]; then
           # Install requirements for export_llama
           PYTHON_EXECUTABLE=python ${CONDA_RUN} --no-capture-output \
             bash examples/models/llama2/install_requirements.sh

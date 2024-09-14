@@ -15,3 +15,14 @@ def define_common_targets():
             "//executorch/extension/llm/custom_ops/spinquant/third-party/FFHT:dumb_fht",
         ],
     )
+
+    runtime.cxx_test(
+        name = "op_fast_hadamard_transform_test",
+        srcs = ["op_fast_hadamard_transform_test.cpp"],
+        deps = [
+            "//executorch/extension/llm/custom_ops:custom_ops",
+            "//executorch/extension/llm/custom_ops/spinquant/third-party/FFHT:dumb_fht",
+            "//executorch/kernels/test:test_util",
+            "//executorch/runtime/core/exec_aten/testing_util:tensor_util",
+        ],
+    )
